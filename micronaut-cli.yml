@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: org.saltations
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [annotation-api, app-name, data, data-jdbc, email-javamail, flyway, hibernate-validator, http-client, jackson-databind, java, java-application, jdbc-hikari, junit, logback, lombok, management, maven, mockito, mysql, netty-server, openapi, problem-json, reactor, reactor-http-client, readme, shade, swagger-ui, test-resources, testcontainers, yaml]
