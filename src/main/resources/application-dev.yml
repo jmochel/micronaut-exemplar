@@ -1,4 +1,7 @@
+
 datasources:
+
   default:
     url: jdbc:tc:mysql:5.7.34:///test-db
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+

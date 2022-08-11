@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Assertions;
 import jakarta.inject.Inject;
 
 @MicronautTest
-class MicronautExemplarTest {
-
+class MicronautExemplarTest
+{
     @Inject
     EmbeddedApplication<?> application;
 
     @Test
-    void testItWorks() {
+    void appIsRunning()
+    {
         Assertions.assertTrue(application.isRunning());
     }
 
