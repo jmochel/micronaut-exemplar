@@ -1,36 +1,30 @@
 package org.saltations.persons;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.AccessorsStyle;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.serde.annotation.Serdeable;
-import io.micronaut.serde.config.naming.LowerCamelCaseStrategy;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
-import org.saltations.IMeta;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.saltations.IEntity;
+import org.saltations.StdEntity;
+import org.saltations.StdValueObject;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
-
-@Getter
-@Setter
+@Data
 @Accessors(fluent = true, chain = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Serdeable(naming = SnakeCaseStrategy.class)
-@Introspected
 @SuperBuilder(builderMethodName = "of")
-@AccessorsStyle(readPrefixes = "", writePrefixes = "")
+@StdEntity
 @Schema(name = "person_entity", allOf = {Person.class})
-public final class PersonEntity extends Person implements IMeta<Long>
+public final class PersonEntity extends Person implements IEntity<Long>, IPerson
 {
     @Id
     private Long id;

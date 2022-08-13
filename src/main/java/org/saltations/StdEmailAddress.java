@@ -1,5 +1,7 @@
 package org.saltations;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Inherited;
