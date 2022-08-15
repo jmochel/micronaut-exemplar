@@ -2,6 +2,7 @@ package org.saltations.persons.service;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.saltations.EntityService;
 import org.saltations.persons.IPerson;
 import org.saltations.persons.PersonEntity;
 import org.saltations.persons.repo.PersonRepo;

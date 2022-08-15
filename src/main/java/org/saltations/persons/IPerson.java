@@ -22,8 +22,9 @@ public interface IPerson
 
     void lastName(@NotNull @NotBlank @Size(max = 100) String lastName);
 
-
     @Schema(description = "Email address", example = "jmochel@landschneckt.org")
     String emailAddress();
     void emailAddress(@NotNull @NotBlank @StdEmailAddress String emailAddress);
+
+    
 }

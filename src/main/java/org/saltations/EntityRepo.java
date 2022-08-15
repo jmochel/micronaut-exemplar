@@ -1,4 +1,4 @@
-package org.saltations.persons.repo;
+package org.saltations;
 
 import io.micronaut.data.repository.CrudRepository;
 import org.saltations.IEntity;

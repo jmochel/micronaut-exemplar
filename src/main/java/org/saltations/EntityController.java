@@ -1,4 +1,4 @@
-package org.saltations.persons.controller;
+package org.saltations;
 
 // EntityService<ID,IC,E extends IEntity<ID>, R extends EntityRepo<ID,E>>
 
@@ -6,10 +6,6 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.saltations.IEntity;
-import org.saltations.persons.Person;
-import org.saltations.persons.repo.EntityRepo;
-import org.saltations.persons.service.EntityService;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;

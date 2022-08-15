@@ -1,10 +1,7 @@
-package org.saltations.persons.service;
+package org.saltations;
 
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import jakarta.inject.Singleton;
 import org.saltations.IEntity;
-import org.saltations.persons.repo.EntityRepo;
+import org.saltations.EntityRepo;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
