@@ -7,7 +7,10 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.saltations.persons.repo.PersonRepo;
+import org.saltations.domain.error.EntityNotCreated;
+import org.saltations.domain.error.EntityNotDeleted;
+import org.saltations.domain.error.EntityNotUpdated;
+import org.saltations.persons.service.PersonService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,34 +18,37 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MicronautTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("Person Repo")
-public class PersonRepoTest
+@DisplayName("Person Service")
+public class PersonServiceTest
 {
-    @Inject
-    private PersonOracle oracle;
+    private final PersonOracle oracle;
+
+    private final PersonMapper modelMapper;
+
+    private final PersonService service;
 
     @Inject
-    private PersonMapper modelMapper;
-
-    @Inject
-    private PersonRepo repo;
+    public PersonServiceTest(PersonOracle oracle, PersonMapper modelMapper, PersonService service) {
+        this.oracle = oracle;
+        this.modelMapper = modelMapper;
+        this.service = service;
+    }
 
     @Test
     @Order(2)
     @DisplayName("Can insert, read, update, and delete")
-    void canCreateReadUpdateAndDelete()
-    {
+    void canCreateReadUpdateAndDelete() throws EntityNotCreated, EntityNotUpdated, EntityNotDeleted {
         // Save
 
-        var prototype = oracle.entityPrototype();
-        var saved = repo.save(prototype);
+        var prototype = oracle.corePrototype();
+        var saved = service.create(prototype);
         assertNotNull(saved);
         assertNotNull(saved.getId());
         oracle.hasSameCoreContent(prototype, saved);
 
         // Read
 
-        var retrieved = repo.findById(saved.getId()).orElseThrow();
+        var retrieved = service.findById(saved.getId()).orElseThrow();
         oracle.hasSameCoreContent(saved, retrieved);
         assertEquals(saved.getId(), retrieved.getId());
 
@@ -50,15 +56,15 @@ public class PersonRepoTest
 
         var alteredCore = oracle.alteredCore();
         var modified = modelMapper.update(alteredCore, retrieved);
-        repo.update(modified);
+        service.update(modified);
 
-        var updated = repo.findById(saved.getId()).orElseThrow();
+        var updated = service.findById(saved.getId()).orElseThrow();
         oracle.hasSameCoreContent(alteredCore, updated);
 
         // Delete
 
-        repo.deleteById(saved.getId());
-        var possible = repo.findById(saved.getId());
+        service.delete(saved.getId());
+        var possible = service.findById(saved.getId());
         assertFalse(possible.isPresent());
     }
 }

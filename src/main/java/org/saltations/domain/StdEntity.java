@@ -1,4 +1,4 @@
-package org.saltations;
+package org.saltations.domain;
 
 import io.micronaut.core.annotation.AccessorsStyle;
 import io.micronaut.serde.annotation.Serdeable;

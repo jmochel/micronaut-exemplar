@@ -1,4 +1,4 @@
-package org.saltations;
+package org.saltations.domain;
 
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
