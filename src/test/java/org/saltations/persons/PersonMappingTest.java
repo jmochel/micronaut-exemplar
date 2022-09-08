@@ -9,14 +9,13 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.saltations.DBContainerTestBase;
+import org.saltations.persons.mapping.PersonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
-@MicronautTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Person Mapping and Serialization")
-class PersonMappingTest
+class PersonMappingTest extends DBContainerTestBase
 {
     @Inject
     private ObjectMapper jsonMapper;

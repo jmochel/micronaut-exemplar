@@ -2,6 +2,7 @@ package org.saltations.persons;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,15 +17,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * Person DTO represents the core attributes describing a person. Used to transfer data on a person from one context to
- * another. They should not have any behavior
+ * Represents the core attributes describing a person. Used to transfer data on a person from one context to another.
+ * They should not have any behavior.
  */
 
-@Getter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder(builderMethodName = "of")
 @StdValueObject
 @Schema(name = "person", description = "Names and contact info")
@@ -38,5 +37,4 @@ public class PersonCore implements IPerson
 
     @Setter(onParam_={@NotNull,@NotBlank,@StdEmailAddress})
     private String emailAddress;
-
 }

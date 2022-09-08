@@ -1,8 +1,9 @@
 package org.saltations.domain;
 
-import org.saltations.domain.error.EntityNotCreated;
-import org.saltations.domain.error.EntityNotDeleted;
-import org.saltations.domain.error.EntityNotUpdated;
+import org.saltations.domain.error.CannotCreateEntity;
+import org.saltations.domain.error.CannotDeleteEntity;
+import org.saltations.domain.error.CannotFindEntity;
+import org.saltations.domain.error.CannotUpdateEntity;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -69,10 +70,10 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      *
      * @return Populated entity of type E
      *
-     * @throws EntityNotCreated if the entity could not be created from the prototype
+     * @throws CannotCreateEntity if the entity could not be created from the prototype
      */
 
-    public E create(@NotNull @Valid C prototype) throws EntityNotCreated
+    public E create(@NotNull @Valid C prototype) throws CannotCreateEntity
     {
         E created;
 
@@ -84,7 +85,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
         }
         catch (Exception e)
         {
-            throw new EntityNotCreated(e, resourceTypeName(), prototype.toString());
+            throw new CannotCreateEntity(e, resourceTypeName(), prototype.toString());
         }
 
         return created;
@@ -98,10 +99,10 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      *
      * @return updated entity.
      *
-     * @throws EntityNotUpdated If the entity could not be updated for any reason
+     * @throws CannotUpdateEntity If the entity could not be updated for any reason
      */
 
-    public E update(@NotNull @Valid E update) throws EntityNotUpdated
+    public E update(@NotNull @Valid E update) throws CannotUpdateEntity
     {
         E updated;
 
@@ -111,7 +112,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
         }
         catch (Exception e)
         {
-            throw new EntityNotUpdated(e, resourceTypeName(), update.getId());
+            throw new CannotUpdateEntity(e, resourceTypeName(), update.getId());
         }
 
 
@@ -123,10 +124,10 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      *
      * @param id is the unique identifier for the entity
      *
-     * @throws EntityNotDeleted If the entity could not be deleted for any reason
+     * @throws CannotDeleteEntity If the entity could not be deleted for any reason
      */
 
-    public void delete(@NotNull ID id) throws EntityNotDeleted
+    public void delete(@NotNull ID id) throws CannotDeleteEntity
     {
         try
         {
@@ -134,7 +135,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
         }
         catch (Exception e)
         {
-            throw new EntityNotDeleted(e, resourceTypeName(), id);
+            throw new CannotDeleteEntity(e, resourceTypeName(), id);
         }
     }
 

@@ -6,7 +6,7 @@ import org.saltations.domain.EntityService;
 import org.saltations.persons.IPerson;
 import org.saltations.persons.PersonCore;
 import org.saltations.persons.PersonEntity;
-import org.saltations.persons.PersonMapper;
+import org.saltations.persons.mapping.PersonMapper;
 import org.saltations.persons.repo.PersonRepo;
 
 @Singleton

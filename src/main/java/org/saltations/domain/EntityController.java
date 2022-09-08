@@ -2,13 +2,22 @@ package org.saltations.domain;
 
 // EntityService<ID,IC,E extends IEntity<ID>, R extends EntityRepo<ID,E>>
 
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.saltations.domain.error.CannotFindEntity;
+import org.saltations.domain.error.DomainException;
+import org.zalando.problem.Problem;
+import org.zalando.problem.ThrowableProblem;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
+import java.net.URI;
 
 
 /**
@@ -23,9 +32,11 @@ import java.util.Optional;
  * @param <ES> Type of the entity service
  */
 
+@Slf4j
 public class EntityController<ID,IC, C extends IC,E extends IEntity<ID>, R extends EntityRepo<ID,E>, M extends EntityMapper<ID,C,E>, ES extends EntityService<ID,IC,C,E,R,M>>
 {
     private final Class<E> clazz;
+
     protected final ES service;
 
     public EntityController(Class<E> clazz, ES service)
@@ -34,19 +45,100 @@ public class EntityController<ID,IC, C extends IC,E extends IEntity<ID>, R exten
         this.service = service;
     }
 
-    protected String entityName()
+    protected String resourceName()
     {
         return clazz.getSimpleName();
     }
 
-    @Operation(summary = "Gets a person", description = "A person's contact is returned")
-    @ApiResponse(responseCode = "400", description = "Invalid Name Supplied")
-    @ApiResponse(responseCode = "404", description = "Person not found")
-    @Get(uri="/{id}")
-    public Optional<E> getById(@NotNull @PathVariable ID id)
+
+    public HttpResponse<E> createEntity(@NotNull @Valid @Body C toBeCreated)
     {
-        return this.service.findById(id);
+        E created;
+
+        try
+        {
+            created = service.create(toBeCreated);
+        }
+        catch (DomainException e)
+        {
+            throw createThrowableProblem(e);
+        }
+
+        return HttpResponse.ok(created);
     }
 
+    public HttpResponse<E> getEntity(@NotNull ID id)
+    {
+        E found;
 
+        try
+        {
+            found = this.service.findById(id).orElseThrow(() -> new CannotFindEntity(resourceName(), id));
+        }
+        catch (DomainException e)
+        {
+            throw createThrowableProblem(e);
+        }
+
+        return HttpResponse.ok(found);
+    }
+
+    public HttpResponse<E> replaceEntity(@NotNull ID id, @NotNull @Valid @Body E replacement)
+    {
+        E replaced;
+
+        try
+        {
+            service.findById(id)
+                    .orElseThrow(() -> new CannotFindEntity(resourceName(), id));
+
+            replaced = service.update(replacement);
+        }
+        catch (DomainException e)
+        {
+            throw createThrowableProblem(e);
+        }
+
+        return HttpResponse.ok(replaced);
+    }
+
+    public HttpResponse<?> deleteEntity(@NotNull ID id)
+    {
+        try
+        {
+            service.findById(id)
+                    .orElseThrow(() -> new CannotFindEntity(resourceName(), id));
+
+            service.delete(id);
+        }
+        catch (DomainException e)
+        {
+            throw createThrowableProblem(e);
+        }
+
+        return HttpResponse.ok();
+    }
+
+    public ThrowableProblem createThrowableProblem(@NotNull DomainException e)
+    {
+        var builder = Problem.builder()
+                .withTitle(e.getTitle())
+                .withStatus(e.getStatusType())
+                .withDetail(e.getDetail());
+
+        // Add the type
+
+        builder.withType(createType(e));
+
+        // Add the properties
+
+        e.getProperties().entrySet().forEach( entry -> builder.with(entry.getKey(), entry.getValue()));
+
+        return builder.build();
+    }
+
+    private URI createType(DomainException e)
+    {
+        return URI.create("https://localhost/probs/" + e.getClass().getSimpleName().replaceAll("([A-Z]+)([A-Z][a-z])", "$1-$2").replaceAll("([a-z])([A-Z])", "$1-$2").toLowerCase());
+    }
 }
