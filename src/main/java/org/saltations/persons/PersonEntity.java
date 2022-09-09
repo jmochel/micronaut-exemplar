@@ -34,7 +34,6 @@ public final class PersonEntity extends PersonCore implements IEntity<Long>, IPe
 {
     @Id
     @GeneratedValue
-    @Schema(description = "Unique identifier")
     private Long id;
 
 }

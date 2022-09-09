@@ -2,9 +2,9 @@ package org.saltations.domain;
 
 import org.saltations.domain.error.CannotCreateEntity;
 import org.saltations.domain.error.CannotDeleteEntity;
-import org.saltations.domain.error.CannotFindEntity;
 import org.saltations.domain.error.CannotUpdateEntity;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
@@ -73,6 +73,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      * @throws CannotCreateEntity if the entity could not be created from the prototype
      */
 
+    @Transactional(Transactional.TxType.REQUIRED)
     public E create(@NotNull @Valid C prototype) throws CannotCreateEntity
     {
         E created;
@@ -102,6 +103,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      * @throws CannotUpdateEntity If the entity could not be updated for any reason
      */
 
+    @Transactional(Transactional.TxType.REQUIRED)
     public E update(@NotNull @Valid E update) throws CannotUpdateEntity
     {
         E updated;
@@ -127,6 +129,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      * @throws CannotDeleteEntity If the entity could not be deleted for any reason
      */
 
+    @Transactional(Transactional.TxType.REQUIRED)
     public void delete(@NotNull ID id) throws CannotDeleteEntity
     {
         try
