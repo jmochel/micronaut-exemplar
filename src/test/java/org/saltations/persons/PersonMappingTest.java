@@ -1,24 +1,15 @@
 package org.saltations.persons;
 
 import io.micronaut.core.beans.BeanIntrospection;
-import io.micronaut.core.beans.BeanIntrospector;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.serde.ObjectMapper;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.saltations.DBContainerTestBase;
 import org.saltations.persons.mapping.PersonMapper;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.beans.Introspector;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,24 +33,19 @@ class PersonMappingTest extends DBContainerTestBase
     @Order(1)
     void pokeTheIntrospector() throws Exception
     {
-//        var beanInfo = Introspector.getBeanInfo(PersonCore.class);
-//        Arrays.stream(beanInfo.getPropertyDescriptors()).forEach(p -> log.info("{}:{}", p.getPropertyType().getSimpleName(), p.getName()));
-
         var introspection = BeanIntrospection.getIntrospection(PersonCore.class);
-
         introspection.getBeanProperties().forEach(p -> log.info("{}:{}", p.getType().getSimpleName(), p.getName()));
 
         final PersonCore core = introspection.instantiate();
-
         log.info("{}", core.toString());
 
         var prop= introspection.getBeanProperties().stream().filter(p -> p.getName().equals("lastName")).findFirst().orElseThrow();
 
         var convertedVal =  conversionService.convert(Character.valueOf('J'), prop.getType()).get();
-
         prop.set(core,convertedVal);
-
         assertEquals("J", core.getLastName());
+
+
     }
 
     @Test

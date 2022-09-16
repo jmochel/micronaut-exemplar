@@ -1,6 +1,7 @@
 package org.saltations.persons.controller;
 
 import io.micronaut.core.async.annotation.SingleResult;
+import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -11,7 +12,9 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +33,10 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
 
+import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,6 +58,7 @@ public class PersonControllerTest extends DBContainerTestBase
     private PersonClient client;
 
     @BeforeAll
+    @AfterEach
     void cleanDB()
     {
         repo.deleteAll();
@@ -92,6 +100,33 @@ public class PersonControllerTest extends DBContainerTestBase
         client.delete(created.getId());
         retrieved = client.get(created.getId()).block();
         assertNull(retrieved);
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Can find with query spec " + RESOURCE)
+    void canFindWithQuerySpec(RequestSpecification spec)
+    {
+        // Create
+
+        var prototype = oracle.corePrototype();
+        var created = client.create(prototype).block();
+
+        // Find
+
+        var found = spec.given().
+            param("firstName", "eq," + created.getFirstName()).
+        when().
+            get("/persons").
+        then()
+            .extract()
+            .body()
+            .jsonPath()
+            .getList(".", PersonEntity.class);
+
+        assertEquals(1, found.size());
+        oracle.hasSameCoreContent(created, found.get(0));
+
     }
 
     @Client("/" + RESOURCE)

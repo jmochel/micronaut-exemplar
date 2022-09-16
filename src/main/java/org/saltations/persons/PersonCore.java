@@ -1,5 +1,6 @@
 package org.saltations.persons;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,12 +30,15 @@ import javax.validation.constraints.Size;
 @Schema(name = "person", description = "Names and contact info")
 public class PersonCore implements IPerson
 {
+    @JsonProperty("first_name")
     @Setter(onParam_={@NotNull,@NotBlank,@Size(max = 100)})
     private String firstName;
 
+    @JsonProperty("last_name")
     @Setter(onParam_={@NotNull,@NotBlank,@Size(max = 100)})
     private String lastName;
 
+    @JsonProperty("email_address")
     @Setter(onParam_={@NotNull,@NotBlank,@StdEmailAddress})
     private String emailAddress;
 }

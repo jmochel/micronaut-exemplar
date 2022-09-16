@@ -4,11 +4,6 @@ package org.saltations.domain;
 
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.saltations.domain.error.CannotFindEntity;
 import org.saltations.domain.error.DomainException;
@@ -18,6 +13,8 @@ import org.zalando.problem.ThrowableProblem;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -33,7 +30,7 @@ import java.net.URI;
  */
 
 @Slf4j
-public class EntityController<ID,IC, C extends IC,E extends IEntity<ID>, R extends EntityRepo<ID,E>, M extends EntityMapper<ID,C,E>, ES extends EntityService<ID,IC,C,E,R,M>>
+public class EntityController<ID,IC, C extends IC,E extends IEntity<ID>, S extends EntitySearchSpec<E>, R extends EntityRepo<ID,E>, M extends EntityMapper<ID,C,E>, SP extends EntitySearchSpecProvider<E,S>, ES extends EntityService<ID,IC,C,E,S,R,M,SP>>
 {
     private final Class<E> clazz;
 
@@ -74,6 +71,22 @@ public class EntityController<ID,IC, C extends IC,E extends IEntity<ID>, R exten
         try
         {
             found = this.service.findById(id).orElseThrow(() -> new CannotFindEntity(resourceName(), id));
+        }
+        catch (DomainException e)
+        {
+            throw createThrowableProblem(e);
+        }
+
+        return HttpResponse.ok(found);
+    }
+
+    public HttpResponse<List<E>> find(@NotNull Map<String,String> queryCriteria)
+    {
+        List<E> found;
+
+        try
+        {
+            found = service.find(queryCriteria);
         }
         catch (DomainException e)
         {
@@ -141,4 +154,6 @@ public class EntityController<ID,IC, C extends IC,E extends IEntity<ID>, R exten
     {
         return URI.create("https://localhost/probs/" + e.getClass().getSimpleName().replaceAll("([A-Z]+)([A-Z][a-z])", "$1-$2").replaceAll("([a-z])([A-Z])", "$1-$2").toLowerCase());
     }
+
+
 }

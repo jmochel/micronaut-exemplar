@@ -3,10 +3,14 @@ package org.saltations.domain;
 import org.saltations.domain.error.CannotCreateEntity;
 import org.saltations.domain.error.CannotDeleteEntity;
 import org.saltations.domain.error.CannotUpdateEntity;
+import org.saltations.domain.error.SearchOperatorRequiresDifferentNumberOfCriteria;
+import org.saltations.domain.error.UnknownSearchOperator;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -17,9 +21,11 @@ import java.util.Optional;
  * @param <E> Class of the persistable business item entity. Contains all the same data as <C> but supports additional
  *           entity specific meta-data.
  * @param <R> Type of the repository used by the service
+ * @param <S> Type of the search spec used by the service
+ * @param <SP> Type of the search spec provider used by the service
  */
 
-public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,  R extends EntityRepo<ID,E>, M extends EntityMapper<ID,C,E>>
+public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>, S extends EntitySearchSpec<E>,  R extends EntityRepo<ID,E>, M extends EntityMapper<ID,C,E>, SP extends EntitySearchSpecProvider<E,S>>
 {
     private final Class<E> clazz;
 
@@ -27,18 +33,22 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
 
     private final EntityMapper<ID,C,E> mapper;
 
+    private final EntitySearchSpecProvider<E,S> searchSpecProvider;
+
     /**
      * Primary constructor
      *
-     * @param clazz Type of the entity
-     * @param repo  Repository for persistence of entities
+     * @param clazz              Type of the entity
+     * @param repo               Repository for persistence of entities
+     * @param searchSpecProvider Search Spec Provider
      */
 
-    public EntityService(Class<E> clazz, R repo, EntityMapper<ID,C,E> mapper)
+    public EntityService(Class<E> clazz, R repo, EntityMapper<ID,C,E> mapper, EntitySearchSpecProvider<E, S> searchSpecProvider)
     {
         this.repo = repo;
         this.clazz = clazz;
         this.mapper = mapper;
+        this.searchSpecProvider = searchSpecProvider;
     }
 
     /**
@@ -61,6 +71,31 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
     public Optional<E> findById(@NotNull ID id)
     {
         return repo.findById(id);
+    }
+
+    /**
+     * Find all resources that match the criteria
+     * <p>
+     * The criteria are in the form of property-name and string value that contains a comma delimited set of an operator
+     * and criteria for that operator. Some examples:
+     * <table border=1>
+     *     <tr><td>Property Name</td><td>Operator and criteria</td></tr>
+     *     <tr><td>firstName</td><td>is_null</td></tr>
+     *     <tr><td>firstName</td><td>is+not_null</td></tr>
+     *     <tr><td>firstName</td><td>eq,Lazarus</td></tr>
+     *     <tr><td>lastUpdated</td><td>eq,2022-09-22T12:00:00</td></tr>
+     *     <tr><td>lastUpdated</td><td>btn,2022-09-22T12:00:00,2022-09-24T12:00:00</td></tr>
+     * </table>
+     *
+     * @param queryCriteria Map of property names and strings containing the comma separated criteria.
+     *
+     * @return List of matching entities. An empty list if no entities match the criteria
+     */
+
+    public List<E> find(@NotNull Map<String,String> queryCriteria) throws SearchOperatorRequiresDifferentNumberOfCriteria, UnknownSearchOperator {
+        var criteria = searchSpecProvider.supply(queryCriteria);
+
+        return repo.findAll(criteria);
     }
 
     /**
@@ -142,5 +177,14 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
         }
     }
 
+    /**
+     * Delete all entities
+     */
+
+    @Transactional(Transactional.TxType.REQUIRED)
+    public void deleteAll()
+    {
+        repo.deleteAll();
+    }
 
 }

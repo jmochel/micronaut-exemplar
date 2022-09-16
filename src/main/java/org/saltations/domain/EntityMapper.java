@@ -3,6 +3,8 @@ package org.saltations.domain;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.Map;
+
 /**
  * Represents standard mapping between core business objects and entities
  *
@@ -20,4 +22,5 @@ public interface EntityMapper<ID, C, E extends IEntity<ID>>
     C createCore(E source);
 
     E update(C source, @MappingTarget E destination);
+
 }
