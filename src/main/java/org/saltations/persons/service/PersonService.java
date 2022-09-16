@@ -1,5 +1,6 @@
 package org.saltations.persons.service;
 
+import io.micronaut.json.JsonMapper;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.saltations.domain.EntityService;
@@ -15,8 +16,8 @@ import org.saltations.persons.repo.PersonSearchSpecProvider;
 public class PersonService extends EntityService<Long, IPerson, PersonCore, PersonEntity, PersonSearchSpec, PersonRepo, PersonMapper,  PersonSearchSpecProvider>
 {
     @Inject
-    public PersonService(PersonRepo repo, PersonMapper mapper, PersonSearchSpecProvider searchSpecProvider)
+    public PersonService(PersonRepo repo, PersonMapper mapper, PersonSearchSpecProvider searchSpecProvider, JsonMapper jsonMapper)
     {
-        super(PersonEntity.class, repo, mapper, searchSpecProvider);
+        super(PersonEntity.class, repo, mapper, searchSpecProvider, jsonMapper);
     }
 }

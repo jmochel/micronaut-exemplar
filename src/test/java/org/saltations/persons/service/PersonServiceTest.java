@@ -68,7 +68,7 @@ public class PersonServiceTest extends DBContainerTestBase
 
         var alteredCore = oracle.alteredCore();
         var modified = modelMapper.update(alteredCore, retrieved);
-        service.update(modified);
+        service.replace(modified);
 
         var updated = service.findById(saved.getId()).orElseThrow();
         oracle.hasSameCoreContent(alteredCore, updated);

@@ -11,7 +11,12 @@ import io.micronaut.http.annotation.Header;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
+import io.micronaut.serde.ObjectMapper;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
@@ -24,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.saltations.DBContainerTestBase;
 import org.saltations.ExemplarApp;
+import org.saltations.SerdeRestAssuredObjectMapper;
 import org.saltations.persons.PersonCore;
 import org.saltations.persons.PersonEntity;
 import org.saltations.persons.mapping.PersonMapper;
@@ -46,6 +52,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class PersonControllerTest extends DBContainerTestBase
 {
     private static final String RESOURCE = "persons";
+
+    @Inject
+    private ObjectMapper serdeMapper;
 
     @Inject
     private PersonOracle oracle;
@@ -116,17 +125,13 @@ public class PersonControllerTest extends DBContainerTestBase
 
         var found = spec.given().
             param("firstName", "eq," + created.getFirstName()).
+            config(RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig(new SerdeRestAssuredObjectMapper(serdeMapper)))).
         when().
             get("/persons").
-        then()
-            .extract()
-            .body()
-            .jsonPath()
-            .getList(".", PersonEntity.class);
+            as(new TypeRef<List<PersonEntity>>(){});
 
         assertEquals(1, found.size());
         oracle.hasSameCoreContent(created, found.get(0));
-
     }
 
     @Client("/" + RESOURCE)

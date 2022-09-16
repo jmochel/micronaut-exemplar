@@ -9,6 +9,10 @@ micronaut:
       swagger-ui:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
+  serde:
+    write-dates-as-timestamps: false
+    deserialization:
+      ignore-unknown: true
 
 datasources:
   default:
@@ -27,3 +31,7 @@ netty:
 
 jackson:
   property-naming-strategy: SNAKE_CASE
+  serialization:
+    indentOutput: true
+
+
