@@ -2,10 +2,10 @@ package org.saltations.domain;
 
 import io.micronaut.json.JsonMapper;
 import io.micronaut.json.tree.JsonNode;
-import jakarta.persistence.EntityNotFoundException;
 import org.saltations.domain.error.CannotCreateEntity;
 import org.saltations.domain.error.CannotDeleteEntity;
 import org.saltations.domain.error.CannotFindEntity;
+import org.saltations.domain.error.CannotPatchUnknownProperty;
 import org.saltations.domain.error.CannotUpdateEntity;
 import org.saltations.domain.error.CannotUpdateEntityFromPatch;
 import org.saltations.domain.error.SearchOperatorRequiresDifferentNumberOfCriteria;
@@ -37,9 +37,11 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
 
     private final R repo;
 
-    private final EntityMapper<ID,C,E> mapper;
+    private final EntityMapper<ID,C,E> modelMapper;
 
     private final EntitySearchSpecProvider<E,S> searchSpecProvider;
+
+    private final JsonMergePatchProvider patchProvider;
 
     private final JsonMapper jsonMapper;
 
@@ -49,15 +51,17 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      * @param clazz              Type of the entity
      * @param repo               Repository for persistence of entities
      * @param searchSpecProvider Search Spec Provider
+     * @param patchProvider
      * @param jsonMapper
      */
 
-    public EntityService(Class<E> clazz, R repo, EntityMapper<ID,C,E> mapper, EntitySearchSpecProvider<E, S> searchSpecProvider, JsonMapper jsonMapper)
+    public EntityService(Class<E> clazz, R repo, EntityMapper<ID,C,E> modelMapper, EntitySearchSpecProvider<E, S> searchSpecProvider, JsonMergePatchProvider patchProvider, JsonMapper jsonMapper)
     {
         this.repo = repo;
         this.clazz = clazz;
-        this.mapper = mapper;
+        this.modelMapper = modelMapper;
         this.searchSpecProvider = searchSpecProvider;
+        this.patchProvider = patchProvider;
         this.jsonMapper = jsonMapper;
     }
 
@@ -125,7 +129,7 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
 
         try
         {
-            var toBeCreated = mapper.createEntity(prototype);
+            var toBeCreated = modelMapper.createEntity(prototype);
 
             created = repo.save(toBeCreated);
         }
@@ -179,19 +183,14 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
      */
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public E modify(@NotNull ID id, @NotNull JsonNode patch) throws CannotFindEntity, CannotUpdateEntityFromPatch
+    public E modify(@NotNull ID id, @NotNull JsonNode patch) throws CannotFindEntity, CannotUpdateEntityFromPatch, CannotPatchUnknownProperty
     {
         var current = repo.findById(id).orElseThrow(() -> new CannotFindEntity(resourceTypeName(), id));
 
         // Merge the patches on top of the current agreement
 
-        try {
-            jsonMapper.updateValueFromTree(current, patch);
-        }
-        catch (IOException e)
-        {
-            throw new CannotUpdateEntityFromPatch(e, resourceTypeName(), id, patch);
-        }
+        var mergeProvider = patchProvider.supply(current, patch);
+        mergeProvider.apply();
 
         return repo.update(current);
     }

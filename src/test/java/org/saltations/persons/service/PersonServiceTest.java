@@ -80,9 +80,9 @@ public class PersonServiceTest extends DBContainerTestBase
         assertFalse(possible.isPresent());
     }
 
-    @ParameterizedTest(name="[{index}] => property name {0} with criteria [{1}]")
-    @MethodSource("validQueryCriteriaProvider")
     @Order(4)
+    @MethodSource("validQueryCriteriaProvider")
+    @ParameterizedTest(name="[{index}] => property name {0} with criteria [{1}]")
     @DisplayName("Can find by valid query criteria")
     void canFindByQueryCriteria(String propName, String  criteriaString, PersonCore expected) throws CannotCreateEntity, SearchOperatorRequiresDifferentNumberOfCriteria, UnknownSearchOperator {
         // Save
@@ -99,9 +99,9 @@ public class PersonServiceTest extends DBContainerTestBase
         oracle.hasSameCoreContent(expected, found.get(0));
     }
 
-    @ParameterizedTest(name="[{index}] => property name {0} with criteria [{1}]")
-    @MethodSource("invalidQueryCriteriaProvider")
     @Order(6)
+    @MethodSource("invalidQueryCriteriaProvider")
+    @ParameterizedTest(name="[{index}] => property name {0} with criteria [{1}]")
     @DisplayName("Can find by invalid query criteria")
     void canDetectInvalidQueryCriteria(String propName, String criteriaString, Class<? extends DomainException> expected) throws CannotCreateEntity, SearchOperatorRequiresDifferentNumberOfCriteria {
 
@@ -110,6 +110,25 @@ public class PersonServiceTest extends DBContainerTestBase
         var queryCriteria = Maps.of(propName, criteriaString);
 
         assertThrows(expected, () -> service.find(queryCriteria));
+    }
+
+    @Order(8)
+    @MethodSource("validPatchProvider")
+    @ParameterizedTest(name="[{index}] => prop name {0} with patch [{1}]")
+    @DisplayName("Can insert, read, update, and delete")
+    void canCreateAndPatch(String propName, String patchAsStr) throws CannotCreateEntity
+    {
+        // Save
+
+        var prototype = oracle.corePrototype();
+        var saved = service.create(prototype);
+        assertNotNull(saved);
+        assertNotNull(saved.getId());
+        oracle.hasSameCoreContent(prototype, saved);
+
+        // Patch
+
+
     }
 
     Stream<Arguments> validQueryCriteriaProvider()

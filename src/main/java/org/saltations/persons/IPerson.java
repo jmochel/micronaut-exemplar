@@ -1,7 +1,9 @@
 package org.saltations.persons;
 
+import io.micronaut.core.annotation.Nullable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.saltations.domain.StdEmailAddress;
+
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,4 +29,9 @@ public interface IPerson
     @Schema(description = "Email address", example = "jmochel@landschneckt.org")
     String getEmailAddress();
     void setEmailAddress(@NotNull @NotBlank @StdEmailAddress String emailAddress);
+
+    @Schema(description = "Notes")
+    String getNotes();
+    void setNotes(@Nullable String notes);
+
 }

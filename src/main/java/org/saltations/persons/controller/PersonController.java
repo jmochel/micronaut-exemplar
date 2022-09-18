@@ -13,11 +13,13 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.annotation.RequestBean;
+import io.micronaut.json.tree.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -111,6 +113,16 @@ public class PersonController extends EntityController<Long, IPerson, PersonCore
     )
     public HttpResponse<PersonEntity> replace(@NotNull @PathVariable Long id, @NotNull @Body PersonEntity replacement) {
         return super.replaceEntity(id, replacement);
+    }
+
+    @Patch(uri="/{id}", consumes = {"application/merge-patch+json"})
+    @Operation(summary = "Replace person", description = "Modify the person using values from RFC-7386 patch")
+    @ApiResponse(responseCode = "404",
+            description = "Not Found. Resource with that id does not exist",
+            content = @Content(mediaType = "application/problem+json",schema = @Schema(implementation = ProblemSchema.class))
+    )
+    public HttpResponse<PersonEntity> modify(@NotNull @PathVariable Long id, @NotNull @Body JsonNode patch) {
+        return null;
     }
 
     @Delete(uri="/{id}")

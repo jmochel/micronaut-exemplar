@@ -1,7 +1,9 @@
 package org.saltations.persons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.micronaut.core.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,4 +40,7 @@ public class PersonCore implements IPerson
 
     @Setter(onParam_={@NotNull,@NotBlank,@StdEmailAddress})
     private String emailAddress;
+
+    @Setter(onParam_={@Nullable})
+    private String notes;
 }
