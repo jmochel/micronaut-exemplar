@@ -1,3 +1,30 @@
+# Exemplar Application
+
+
+## Packaging
+
+```shell
+src/main/a/b/c/domain
+src/main/a/b/c/domain/EntityController
+src/main/a/b/c/domain/EntityMapper
+src/main/a/b/c/domain/EntityRepo
+src/main/a/b/c/domain/EntityService
+src/main/a/b/c/domain/IEntity
+```
+
+```shell
+src/main/a/b/c/[entity]
+src/main/a/b/c/[entity]/I[Entity].java
+src/main/a/b/c/[entity]/[Entity]Core.java
+src/main/a/b/c/[entity]/[Entity]Record.java
+src/main/a/b/c/[entity]/repo/[Entity]Repo.java
+src/main/a/b/c/[entity]/mapping/[Entity]Mapper.java
+src/main/a/b/c/[entity]/service/[Entity]Service.java
+src/main/a/b/c/[entity]/controller/[Entity]Controller.java
+```
+
+# Frameworks
+
 ## Micronaut 3.6.0 Documentation
 
 - [User Guide](https://docs.micronaut.io/3.6.0/guide/index.html)
