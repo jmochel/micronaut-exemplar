@@ -44,8 +44,6 @@ public abstract class EntityOracle<IC, C extends IC, E extends IC>
 
     public abstract E entityPrototype();
 
-
-
     /**
      * Confirms that the objects have the same core data
      */

@@ -11,15 +11,16 @@
     <parent>
         <groupId>io.micronaut</groupId>
         <artifactId>micronaut-parent</artifactId>
-        <version>3.6.2</version>
+        <version>3.7.1</version>
     </parent>
 
     <properties>
         <packaging>jar</packaging>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jdk.version>17</jdk.version>
-        <release.version>17</release.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.release>17</maven.compiler.release>
         <micronaut.test.resources.enabled>true</micronaut.test.resources.enabled>
         <micronaut.runtime>netty</micronaut.runtime>
         <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
@@ -85,10 +86,6 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-management</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut.beanvalidation</groupId>
-            <artifactId>micronaut-hibernate-validator</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micronaut.data</groupId>
@@ -270,6 +267,7 @@
                     <compilerArgs>
                         <arg>-Amicronaut.processing.group=org.saltations</arg>
                         <arg>-Amicronaut.processing.module=micronaut-exemplar</arg>
+                        <arg>-parameters</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
