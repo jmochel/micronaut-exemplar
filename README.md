@@ -1,7 +1,6 @@
 # Exemplar Application
 
-
-## Packaging
+## Packaging and Layering
 
 ```shell
 src/main/a/b/c/domain
@@ -23,13 +22,21 @@ src/main/a/b/c/[entity]/service/[Entity]Service.java
 src/main/a/b/c/[entity]/controller/[Entity]Controller.java
 ```
 
+## Domain modeling
+ 
+* Entity - An object uniquely identified by a single identity attribute
+* Repo
+* Mapper
+* Service
+* Controller
+
 # Frameworks
 
-## Micronaut 3.6.0 Documentation
+## Micronaut 3.7.1 Documentation
 
-- [User Guide](https://docs.micronaut.io/3.6.0/guide/index.html)
-- [API Reference](https://docs.micronaut.io/3.6.0/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/3.6.0/guide/configurationreference.html)
+- [User Guide](https://docs.micronaut.io/3.7.1/guide/index.html)
+- [API Reference](https://docs.micronaut.io/3.7.1/api/index.html)
+- [Configuration Reference](https://docs.micronaut.io/3.7.1/guide/configurationreference.html)
 - [Micronaut Guides](https://guides.micronaut.io/index.html)
 ---
 

@@ -92,7 +92,6 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
         return created;
     }
 
-
     /**
      * Updates an entity of type E with the contents of the given entity.
      *
@@ -117,7 +116,6 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
             throw new CannotUpdateEntity(e, resourceTypeName(), update.getId());
         }
 
-
         return updated;
     }
 
@@ -141,6 +139,4 @@ public abstract class EntityService<ID, IC, C extends IC, E extends IEntity<ID>,
             throw new CannotDeleteEntity(e, resourceTypeName(), id);
         }
     }
-
-
 }
